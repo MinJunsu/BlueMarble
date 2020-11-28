@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 public class PlayGame
 {
     private int playerCount;
+    private GoldenKey goldenKey;
     private GameBoard gameBoard = new GameBoard();
     private Board[] boards;
     private Player[] players;
@@ -38,6 +39,7 @@ public class PlayGame
         players = bank.getPlayers();
         gameBoardView.setBoards(boards);
         gameBoardView.setPlayerCount(bank.playerCount);
+        goldenKey = new GoldenKey(bank, gameBoardView);
     }
 
     private void play(int firstNumber, int secondNumber)
@@ -54,9 +56,9 @@ public class PlayGame
                 players[turn].increaseIsolateCount();
                 JOptionPane.showMessageDialog(null, "현재 " + players[turn].getIsolateCount() + " 번째 탈출 시도"
                         + "\n첫번째 주사위 : " + firstNumber + ", 두번째 주사위 : " + secondNumber + "로 탈출 불가합니다.");
-                return;
             }
             doTurnOver();
+            return;
         }
 
         gameBoardView.moveAirPlane(firstNumber + secondNumber, players[turn].getPosition(), turn);
@@ -110,14 +112,20 @@ public class PlayGame
                 case 4:
                     // 사회 복지기금 받기
                     break;
+
+                case 5:
+                    goldenKey.makeRandomNumber();
+                    goldenKey.setPlayer(turn);
+                    goldenKey.pickGoldenKey(players[turn]);
+                    break;
             }
         }
     }
 
     public void doTurnOver()
     {
-        turnOverButton.setEnabled(true);
-        diceButton.setEnabled(false);
+        turnOverButton.setEnabled(false);
+        diceButton.setEnabled(true);
     }
 
     public void isClicked()

@@ -150,5 +150,4 @@ public class Country extends Board
     public void travel(Player player) { }
     @Override
     public void getPaid(Player player) { }
-
 }

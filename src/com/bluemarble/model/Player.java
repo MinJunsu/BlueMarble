@@ -17,6 +17,7 @@ public class Player
         this.position = 0;
         this.name = name;
         this.balance = balance;
+        countries = new ArrayList<Country>();
     }
 
     public void setIsolated()
@@ -80,6 +81,18 @@ public class Player
         return false;
     }
 
+    public int[] getConstructCount()
+    {
+        int villaCount = 0, buildingCount = 0, hotelCount = 0;
+        for(Country c : countries)
+        {
+            villaCount += c.getVillaCount();
+            buildingCount += c.getBuildingCount();
+            hotelCount += c.getHotelCount();
+        }
+        return new int[] { villaCount, buildingCount, hotelCount };
+    }
+
     public void move(int num)
     {
         this.position = (this.position + num) % 40;
@@ -108,5 +121,15 @@ public class Player
     public int getBalance()
     {
         return this.balance;
+    }
+
+    public int getTicketCount()
+    {
+        return ticketCount;
+    }
+
+    public void setTicketCount(int count)
+    {
+        this.ticketCount = count;
     }
 }
