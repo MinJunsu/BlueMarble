@@ -20,7 +20,7 @@ public class GameStarter
 
         Dice dice = new Dice();
         Bank bank = new Bank(firstPlayer, secondPlayer, thirdPlayer, forthPlayer, playerCount);
-        MainView view = new MainView(dice);
+        MainView view = new MainView(dice, bank);
         PlayGame game = new PlayGame(4, dice, view, bank);
         game.isClicked();
     }

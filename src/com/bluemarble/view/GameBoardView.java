@@ -1,8 +1,6 @@
 package com.bluemarble.view;
 
-import com.bluemarble.model.Board;
-import com.bluemarble.model.Country;
-import com.bluemarble.model.Dice;
+import com.bluemarble.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,14 +10,15 @@ import java.util.ArrayList;
 
 public class GameBoardView extends JPanel
 {
-    private Image redAirPlane, blueAirPlane, blackAirPlane, yellowAirPlane;
-    private Image[] airPlaneImage;
+    private Image smallRedAirPlane, smallBlueAirPlane, smallWhiteAirPlane, smallYellowAirPlane;
+    private Image bigRedAirPlane, bigBlueAirPlane, bigWhiteAirPlane, bigYellowAirPlane;
+    private Image[] smallAirPlaneImage, bigAirPlaneImage;
     private Image oneDice, twoDice, threeDice, fourDice, fiveDice, sixDice;
     private ImageIcon firstInfo, secondInfo, thirdInfo, forthInfo;
     private Image[] diceImage;
     private Image firstDice, secondDice;
     private JButton diceButton, turnOverButton;
-    private JLabel turnLabel, doubleLabel;
+    private JLabel doubleLabel;
     private Dice dice;
     private JFrame frame;
     private JButton[] buttons;
@@ -27,22 +26,27 @@ public class GameBoardView extends JPanel
     private ArrayList<int[]> playersPosition = new ArrayList<>();
     private int[] airPlanePosition;
     private int playerCount;
+    private PlayerPanelView firstPlayerPanel, secondPlayerPanel, thirdPlayerPanel, forthPlayerPanel;
+    private PlayerPanelView[] playerPanelViews;
+    private Bank bank;
+    private Player[] players;
+    private int turn;
 
-    public GameBoardView(JFrame frame, Dice dice)
+    public GameBoardView(JFrame frame, Dice dice, Bank bank)
     {
+        this.bank = bank;
         this.frame = frame;
         this.dice = dice;
+        this.players = bank.getPlayers();
         buttons = new JButton[36];
         setLayout(null);
         makeButtons();
         loadImage();
         initializePosArray();
+        initializePanel(bank.playerCount);
 
         diceButton = new JButton("주사위 굴리기");
         diceButton.setBounds(720, 820, 130, 40);
-
-        turnLabel = new JLabel("Player 1 TURN");
-        turnLabel.setBounds(400, 200, 200, 100);
 
         doubleLabel = new JLabel();
         doubleLabel.setBounds(590, 765, 130, 40);
@@ -54,8 +58,38 @@ public class GameBoardView extends JPanel
 
         add(turnOverButton);
         add(doubleLabel);
-        add(turnLabel);
         add(diceButton);
+    }
+
+    public PlayerPanelView[] getPlayerPanelViews()
+    {
+        return playerPanelViews;
+    }
+
+    public void initializePanel(int playerCount)
+    {
+        switch (playerCount)
+        {
+            case 4:
+                forthPlayerPanel = new PlayerPanelView(players[3]);
+                forthPlayerPanel.setBounds(550, 450, 300, 300);
+                add(forthPlayerPanel);
+
+            case 3:
+                thirdPlayerPanel = new PlayerPanelView(players[2]);
+                thirdPlayerPanel.setBounds(150, 450, 300, 300);
+                add(thirdPlayerPanel);
+
+            case 2:
+                secondPlayerPanel = new PlayerPanelView(players[1]);
+                secondPlayerPanel.setBounds(550, 150, 300, 300);
+                firstPlayerPanel = new PlayerPanelView(players[0]);
+                firstPlayerPanel.setBounds(150, 150, 300, 300);
+                add(secondPlayerPanel);
+                add(firstPlayerPanel);
+                break;
+        }
+        playerPanelViews = new PlayerPanelView[] { firstPlayerPanel, secondPlayerPanel, thirdPlayerPanel, forthPlayerPanel };
     }
 
     public void setPlayerCount(int playerCount)
@@ -82,11 +116,22 @@ public class GameBoardView extends JPanel
         }
     }
 
+    public void setTurn(int turn)
+    {
+        this.turn = turn;
+    }
+
     public void paintComponent(Graphics g)
     {
         paintBackGrounds(g);
         paintPlayers(g);
         paintDice(g);
+        setTurnImage(g);
+    }
+
+    public void setTurnImage(Graphics g)
+    {
+        g.drawImage(bigAirPlaneImage[turn], 475, 800, this);
     }
 
     public void setButtonColor(Color c, int index)
@@ -115,13 +160,8 @@ public class GameBoardView extends JPanel
     {
         for(int i = 0; i < playerCount; i++)
         {
-            g.drawImage(airPlaneImage[i], playersPosition.get(i)[0], playersPosition.get(i)[1], this);
+            g.drawImage(smallAirPlaneImage[i], playersPosition.get(i)[0], playersPosition.get(i)[1], this);
         }
-    }
-
-    public void setTurnLabelText(int turn)
-    {
-        turnLabel.setText("Player " + turn + " TURN");
     }
 
     public void paintDice(Graphics g)
@@ -132,13 +172,11 @@ public class GameBoardView extends JPanel
 
     public void moveAirPlane(int length, int position, int player)
     {
-        System.out.println(player);
         for(int i = 1; i <= length; i++)
         {
             try
             {
                 moveAirplane(player, (position + i) % 40);
-                this.repaint();
             }
             catch (Exception e) { }
         }
@@ -207,11 +245,17 @@ public class GameBoardView extends JPanel
 
     public void loadImage()
     {
-        redAirPlane = new ImageIcon("imageFiles/redAirplane.png").getImage();
-        blueAirPlane = new ImageIcon("imageFiles/blueAirplane.png").getImage();
-        blackAirPlane = new ImageIcon("imageFiles/blackAirplane.png").getImage();
-        yellowAirPlane = new ImageIcon("imageFiles/yellowAirplane.png").getImage();
-        airPlaneImage = new Image[] { redAirPlane, blueAirPlane, blackAirPlane, yellowAirPlane };
+        smallRedAirPlane = new ImageIcon("imageFiles/smallRedAirplane.png").getImage();
+        smallBlueAirPlane = new ImageIcon("imageFiles/smallBlueAirplane.png").getImage();
+        smallWhiteAirPlane = new ImageIcon("imageFiles/smallWhiteAirplane.png").getImage();
+        smallYellowAirPlane = new ImageIcon("imageFiles/smallYellowAirplane.png").getImage();
+        smallAirPlaneImage = new Image[] { smallRedAirPlane, smallBlueAirPlane, smallWhiteAirPlane, smallYellowAirPlane };
+
+        bigRedAirPlane = new ImageIcon("imageFiles/bigRedAirPlane.png").getImage();
+        bigBlueAirPlane = new ImageIcon("imageFiles/bigBlueAirPlane.png").getImage();
+        bigWhiteAirPlane = new ImageIcon("imageFiles/bigWhiteAirPlane.png").getImage();
+        bigYellowAirPlane = new ImageIcon("imageFiles/bigYellowAirPlane.png").getImage();
+        bigAirPlaneImage = new Image[] { bigRedAirPlane, bigBlueAirPlane, bigWhiteAirPlane, bigYellowAirPlane };
         oneDice = new ImageIcon("imageFiles/oneDice.png").getImage();
         twoDice = new ImageIcon("imageFiles/twoDice.png").getImage();
         threeDice = new ImageIcon("imageFiles/threeDice.png").getImage();

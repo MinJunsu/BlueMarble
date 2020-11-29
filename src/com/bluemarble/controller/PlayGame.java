@@ -3,6 +3,7 @@ package com.bluemarble.controller;
 import com.bluemarble.model.*;
 import com.bluemarble.view.GameBoardView;
 import com.bluemarble.view.MainView;
+import com.bluemarble.view.PlayerPanelView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,7 @@ public class PlayGame
     private int doubleCount, turn;
     private int firstNumber, secondNumber;
     private Color[] colors = {Color.RED, Color.BLUE, Color.BLACK, Color.YELLOW};
+    private PlayerPanelView[] playerPanelViews;
 
     public PlayGame(int playerCount, Dice dice, MainView view, Bank bank)
     {
@@ -40,6 +42,7 @@ public class PlayGame
         gameBoardView.setBoards(boards);
         gameBoardView.setPlayerCount(bank.playerCount);
         goldenKey = new GoldenKey(bank, gameBoardView);
+        playerPanelViews = gameBoardView.getPlayerPanelViews();
     }
 
     private void play(int firstNumber, int secondNumber)
@@ -120,12 +123,21 @@ public class PlayGame
                     break;
             }
         }
+        playerPanelViews[turn].updatePlayer();
     }
 
     public void doTurnOver()
     {
+        turn++;
+        if(turn >= bank.playerCount)
+        {
+            turn = 0;
+        }
+        gameBoardView.setTurn(turn);
+        gameBoardView.repaint();
         turnOverButton.setEnabled(false);
         diceButton.setEnabled(true);
+        doubleCount = 0;
     }
 
     public void isClicked()
@@ -159,16 +171,7 @@ public class PlayGame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-
-                gameBoardView.setTurnLabelText(++turn);
-
-                if(turn >= bank.playerCount)
-                {
-                    turn = 0;
-                }
-                turnOverButton.setEnabled(false);
-                diceButton.setEnabled(true);
-                doubleCount = 0;
+                doTurnOver();
             }
         });
     }

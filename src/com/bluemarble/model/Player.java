@@ -98,6 +98,25 @@ public class Player
         this.position = (this.position + num) % 40;
     }
 
+    public ArrayList<Country> getCountries()
+    {
+        return countries;
+    }
+
+    public void sellCountry(String countryName)
+    {
+        for(int i = 0; i < countries.size(); i++)
+        {
+            if(countries.get(i).getName().equals(countryName))
+            {
+                countries.get(i).sellCountry();
+                countries.remove(i);
+                // 우선 20만원 입금
+                this.deposit(200000);
+            }
+        }
+    }
+
     public void deposit(int price)
     {
         this.balance += price;
@@ -131,5 +150,10 @@ public class Player
     public void setTicketCount(int count)
     {
         this.ticketCount = count;
+    }
+
+    public void addCountry(Country c)
+    {
+        countries.add(c);
     }
 }

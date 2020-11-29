@@ -9,6 +9,14 @@ public class Country extends Board
     private int villaCount, buildingCount, hotelCount;
     private Player owner;
 
+    public void sellCountry()
+    {
+        owner = null;
+        villaCount = 0;
+        buildingCount = 0;
+        hotelCount = 0;
+    }
+
     public Country(String name, int countryPrice, int tollFee, int villaBuyPrice, int buildingBuyPrice, int hotelBuyPrice, int villaPayPrice, int buildingPayPrice, int hotelPayPrice)
     {
         super(true);

@@ -55,6 +55,7 @@ public class Bank
 
         if(tmp == JOptionPane.YES_OPTION)
         {
+            player.buyCountry(country);
             JOptionPane.showMessageDialog(null, country.getName() + " 구매에 성공하셨습니다!!");
             country.buyCountry(player);
             flag = true;
