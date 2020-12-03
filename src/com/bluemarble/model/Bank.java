@@ -115,6 +115,25 @@ public class Bank
         owner.deposit(tollFee);
         JOptionPane.showMessageDialog(null,"통행료 지불" + tollFee);
     }
+    
+    public boolean isBankrupt(Player p, int pay)
+    {
+    	boolean flag = false;
+    	
+    	while(p.getBalance() > pay)
+        {
+            if(p.getHighPrice() != null)
+            {
+                p.saleCountry(p.getHighPrice(), 100);
+            }
+            else
+            {
+                p = null;
+                flag = true;
+            }
+        }
+    	return flag;
+    }
 
     public void getPaid(Player player)
     {

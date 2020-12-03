@@ -1,5 +1,6 @@
 package com.bluemarble.view;
 
+import com.bluemarble.model.Bank;
 import com.bluemarble.model.Country;
 import com.bluemarble.model.Player;
 
@@ -35,9 +36,9 @@ public class PlayerPanelView extends JPanel
         playerBalance.setBounds(10, 40, 100, 30);
         tablePanel.setBounds(10, 75, 280, 180);
 
-        JButton sellButton = new JButton("선택 항목 판매");
-        sellButton.setBounds(16, 265, 268, 25);
-        sellButton.addActionListener(new ActionListener()
+        JButton saleButton = new JButton("선택 항목 판매");
+        saleButton.setBounds(16, 265, 268, 25);
+        saleButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -46,16 +47,22 @@ public class PlayerPanelView extends JPanel
                 {
                     if(((Boolean) TradingView.getValueAt(i, 0)))
                     {
-                        player.sellCountry((String) TradingView.getValueAt(i, 1));
-                        Model.removeRow(i);
-                        Model.fireTableDataChanged();
-                        setPlayerBalance();
+                    	for (int j = 0; j < player.getCountries().size(); j++)
+                    	{
+                    		if (player.getCountries().get(j).getName().equals((String) TradingView.getValueAt(i, 1)))
+                    		{
+                    			player.saleCountry(player.getCountries().get(j), 100);
+                    			Model.removeRow(i);
+                                Model.fireTableDataChanged();
+                                setPlayerBalance();
+                    		}
+                    	}
                     }
                 }
             }
         });
 
-        this.add(sellButton);
+        this.add(saleButton);
         this.add(playerName);
         this.add(playerBalance);
         this.add(tablePanel);
@@ -111,7 +118,7 @@ public class PlayerPanelView extends JPanel
             JCheckBox checkBox = new JCheckBox();
             checkBox.setHorizontalAlignment(JLabel.CENTER);
             TradingView.getColumn("선택").setCellEditor(new DefaultCellEditor(checkBox));
-            Model.addRow(new Object[] { false, c.getName(), c.getTollFee(), c.getVillaCount(), c.getBuildingCount(), c.getHotelCount() });
+            Model.addRow(new Object[] { false, c.getName(), c.getTotalPrice(), c.getVillaCount(), c.getBuildingCount(), c.getHotelCount() });
         }
     }
 

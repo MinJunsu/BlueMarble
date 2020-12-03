@@ -41,11 +41,11 @@ public class PlayGame
         players = bank.getPlayers();
         gameBoardView.setBoards(boards);
         gameBoardView.setPlayerCount(bank.playerCount);
-        goldenKey = new GoldenKey(bank, gameBoardView);
+        goldenKey = new GoldenKey(bank, gameBoardView, this);
         playerPanelViews = gameBoardView.getPlayerPanelViews();
     }
 
-    private void play(int firstNumber, int secondNumber)
+    public void play(int firstNumber, int secondNumber)
     {
         if(players[turn].getIsIsolated())
         {
@@ -70,6 +70,71 @@ public class PlayGame
             bank.getPaid(players[turn]);
         }
         players[turn].move(firstNumber + secondNumber);
+
+        if (boards[players[turn].getPosition()].getType())
+        {
+            if (boards[players[turn].getPosition()].getOwner() == null)
+            {
+                if(bank.buyCountry(players[turn], (Country) boards[players[turn].getPosition()]))
+                {
+                    gameBoardView.setButtonColor(colors[turn], players[turn].getPosition());
+                }
+            }
+            else if(boards[players[turn].getPosition()].getOwner() != players[turn])
+            {
+                if(boards[players[turn].getPosition()].getName() == "제주도" || boards[players[turn].getPosition()].getName() == "콩코드 여객기" || boards[players[turn].getPosition()].getName() == "부산"
+                        || boards[players[turn].getPosition()].getName() == "타이타닉호" || boards[players[turn].getPosition()].getName() == "콜롬비아호" || boards[players[turn].getPosition()].getName() == "서울" ) {
+                    return;
+                }
+                bank.payTollFee(boards[players[turn].getPosition()].getOwner(), players[turn], boards[players[turn].getPosition()].getTollFee());
+            }
+            else
+            {
+                bank.buyConstructor((Country) boards[players[turn].getPosition()], players[turn]);
+            }
+        }
+        else
+        {
+            int value = boards[players[turn].getPosition()].getOtherType();
+            switch (value)
+            {
+                case 1:
+                    JOptionPane.showMessageDialog(null, "무인도에 들어오셨습니다. 더블이 나오시거나, 3턴이 지나면 탈출할 수 있습니다.");
+                    boards[players[turn].getPosition()].isolated(players[turn]);
+                    doTurnOver();
+                    break;
+
+                case 2:
+                    boards[players[turn].getPosition()].donation(players[turn]);
+                    break;
+
+                case 3:
+                    boards[players[turn].getPosition()].travel(players[turn]);
+                    break;
+
+                case 4:
+                    // 사회 복지기금 받기
+                    break;
+
+                case 5:
+                    goldenKey.makeRandomNumber();
+                    goldenKey.setPlayer(turn);
+                    goldenKey.pickGoldenKey(players[turn]);
+                    break;
+            }
+        }
+        playerPanelViews[turn].updatePlayer();
+    }
+    
+    public void goldenKeyPlay(int arrival_index)
+    {
+    	int move = arrival_index > players[turn].getPosition() ? players[turn].getPosition() - arrival_index : 40 - (arrival_index - players[turn].getPosition());
+        gameBoardView.moveAirPlane(move, players[turn].getPosition(), turn);
+        if((players[turn].getPosition() + move) / 40 == 1)
+        {
+            bank.getPaid(players[turn]);
+        }
+        players[turn].move(move);
 
         if (boards[players[turn].getPosition()].getType())
         {

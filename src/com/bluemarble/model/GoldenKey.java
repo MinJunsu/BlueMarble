@@ -1,5 +1,6 @@
 package com.bluemarble.model;
 
+import com.bluemarble.controller.PlayGame;
 import com.bluemarble.view.GameBoardView;
 
 import javax.swing.*;
@@ -11,12 +12,14 @@ public class GoldenKey
     private Player player;
     private Bank bank;
     private GameBoardView gameBoardView;
+    private PlayGame playGame;
 
-    public GoldenKey(Bank bank, GameBoardView gameBoardView)
+    public GoldenKey(Bank bank, GameBoardView gameBoardView, PlayGame playGame)
     {
         lastValue = 24;
         this.bank = bank;
         this.gameBoardView = gameBoardView;
+        this.playGame = playGame;
     }
 
     public void setPlayer(int turn)
@@ -123,14 +126,13 @@ public class GoldenKey
                 "병원에서 건강진단을 받았음. \n" +
                 "병원비 5만원을 은행에 내시오.\n";
         showMessage(message);
-        if (p.withdraw(50000))
+        if (bank.isBankrupt(p, 50000))
         {
-            showMessage("5만원 출금 완료!!");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
         }
         else
         {
-            // 강제 매각 메서드
-            showMessage("잔액부족");
+        	p.withdraw(50000);
         }
             
     }
@@ -152,6 +154,7 @@ public class GoldenKey
         showMessage(message);
         p.setPosition(10);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
+        playGame.play(-1, 1);
     }
 
     private void partyInvitation(Player p)
@@ -168,12 +171,9 @@ public class GoldenKey
         message = "   • 관광여행(제주도)  • \n" +
                 "제주도로 가시오.(제주도에 통행료 지불, 출발지 거쳐갈경우 월급 받으시오.)";
         showMessage(message);
-        if (p.getPosition() > 5)
-        {
-            bank.getPaid(p);
-        }
-        p.setPosition(5);
+        
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
+        playGame.goldenKeyPlay(5);
     }
 
     private void finesSpeeding(Player p) 
@@ -181,14 +181,13 @@ public class GoldenKey
         message = "   • 과속운전벌금  • \n" +
                 "과속운전을 했으므로 벌금 5만원을 내시오.\n";
         showMessage(message);
-        if (p.withdraw(50000))
+        if (bank.isBankrupt(p, 50000))
         {
-            showMessage("5만원 출금 완료!!");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
         }
         else
         {
-            //강제 매각 메서드
-            showMessage("잔액부족");
+        	p.withdraw(50000);
         }
     }
 
@@ -197,13 +196,13 @@ public class GoldenKey
         message = "   • 해외유학  • \n" +
                 "학교 등록금 10만원을 내시오";
         showMessage(message);
-        if (p.withdraw(100000))
+        if (bank.isBankrupt(p, 100000))
         {
-            showMessage("10만원 출금 완료!!");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
         }
         else
         {
-            showMessage("잔액부족");
+        	p.withdraw(100000);
         }
     }
 
@@ -221,6 +220,7 @@ public class GoldenKey
                 "뒤로 세칸 옮기시오\n";
         showMessage(message);
         p.setPosition((p.getPosition() + 37) % 40);
+        playGame.play(-1, 1);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -230,6 +230,7 @@ public class GoldenKey
                 "뒤로 두칸 옮기시오\n";
         showMessage(message);
         p.setPosition((p.getPosition() + 38) % 40);
+        playGame.play(-1, 1);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -238,7 +239,7 @@ public class GoldenKey
         message = "   • 고속도로  • \n" +
                 "출발지까지 곧바로 가시오";
         showMessage(message);
-        p.setPosition(0);
+        playGame.goldenKeyPlay(0);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -279,11 +280,7 @@ public class GoldenKey
                 "부산으로 가시오\n" +
                 "부산에 통행료 지불, 출발지 거쳐갈 경우 월급을 타시오.";
         showMessage(message);
-        if (p.getPosition() > 24)
-        {
-            bank.getPaid(p);
-        }
-        p.setPosition(24);
+        playGame.goldenKeyPlay(24);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -296,10 +293,14 @@ public class GoldenKey
         int[] constructCount = p.getConstructCount();
 
         int pay = constructCount[2] * 50000 + constructCount[1] * 30000 + constructCount[0] * 10000;
-        if (!p.withdraw(pay))
+        if (bank.isBankrupt(p, pay))
         {
-            // 강제 매각 메서드
-            showMessage("잔액부족");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
+        }
+        else
+        {
+        	if (p.withdraw(pay))
+        		showMessage("납부 성공");
         }
     }
 
@@ -315,8 +316,9 @@ public class GoldenKey
     {
         message = "   • 세계일주초대권  • \n" +
                 "축하하오. 현재 위치에서부터 한바퀴 돌아오시오.\n" +
-                "출발지 거쳐가면서 월급을 타시고, 복지기금을 거쳐가면서";
+                "출발지 거쳐가면서 월급을 타시고, \n 복지기금을 거쳐가면서 모아놓은 기금을 받으시오.";
         showMessage(message);
+        playGame.play(40,0);
     }
 
     private void repairCost(Player p)
@@ -328,9 +330,13 @@ public class GoldenKey
         int[] constructCount = p.getConstructCount();
 
         int pay = constructCount[2] * 100000 + constructCount[1] * 60000 + constructCount[0] * 30000;
-        if (!p.withdraw(pay))
+        if (bank.isBankrupt(p, pay))
         {
-            showMessage("잔액부족");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
+        }
+        else
+        {
+        	p.withdraw(pay);
         }
     }
 
@@ -347,7 +353,7 @@ public class GoldenKey
         message = "   • 반액대매출  • \n" +
                 "당신의 재산중에서 제일 비싼곳을 반액으로 은행에 파시오";
         showMessage(message);
-        // 강제 매각 메서드
+        p.saleCountry(p.getHighPrice(), 50);
     }
 
     private void seoulTour(Player p)
@@ -356,11 +362,7 @@ public class GoldenKey
                 "88년도 올림픽 개최지인 서울로 가시오\n" +
                 "서울에 통행료 200만원 지불, 출발지 거칠경우 월급을 타시오.";
         showMessage(message);
-        if (p.getPosition() > 39)
-        {
-            bank.getPaid(p);
-        }
-        p.setPosition(39);
+        playGame.goldenKeyPlay(39);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -372,9 +374,13 @@ public class GoldenKey
         showMessage(message);
         int[] constructCount = p.getConstructCount();
         int pay = constructCount[2] * 150000 + constructCount[1] * 100000 + constructCount[0] * 30000;
-        if (!p.withdraw(pay))
+        if (bank.isBankrupt(p, pay))
         {
-            showMessage("잔액부족");
+            showMessage(p.getName() + "님이 파산하셨습니다.");
+        }
+        else
+        {
+        	p.withdraw(pay);
         }
     }
 
@@ -384,12 +390,7 @@ public class GoldenKey
                 "우주항공국에서 우주여행초청장이 왔음\n" +
                 "출발지 거칠경우 월급을 타시오.";
         showMessage(message);
-        if (p.getPosition() > 30)
-        {
-            bank.getPaid(p);
-        }
-        // 추가 메서드
-        p.setPosition(30);
+        playGame.goldenKeyPlay(30);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 
@@ -399,12 +400,7 @@ public class GoldenKey
                 "사회복지기금 접수처로 가시오\n" +
                 "출발지 거칠경우 월급타시오";
         showMessage(message);
-        if (p.getPosition() > 38)
-        {
-            bank.getPaid(p);
-        }
-        // 추가 메서드
-        p.setPosition(38);
+        playGame.goldenKeyPlay(38);
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
     }
 }

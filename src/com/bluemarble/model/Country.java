@@ -9,14 +9,6 @@ public class Country extends Board
     private int villaCount, buildingCount, hotelCount;
     private Player owner;
 
-    public void sellCountry()
-    {
-        owner = null;
-        villaCount = 0;
-        buildingCount = 0;
-        hotelCount = 0;
-    }
-
     public Country(String name, int countryPrice, int tollFee, int villaBuyPrice, int buildingBuyPrice, int hotelBuyPrice, int villaPayPrice, int buildingPayPrice, int hotelPayPrice)
     {
         super(true);
@@ -33,7 +25,7 @@ public class Country extends Board
 
     public int getTotalPrice()
     {
-        return villaBuyPrice * villaCount + buildingBuyPrice * buildingCount + hotelBuyPrice * hotelCount;
+        return countryPrice + villaBuyPrice * villaCount + buildingBuyPrice * buildingCount + hotelBuyPrice * hotelCount;
     }
 
     public String getName()
@@ -62,14 +54,21 @@ public class Country extends Board
                 break;
         }
     }
-
+    
+    public void saleCountry()
+    {
+        this.owner = null;
+        this.villaCount = 0;
+        this.buildingCount = 0;
+        this.hotelCount = 0;
+    }
+    
     @Override
     public void buyCountry(Player player)
     {
-
         this.owner = player;
     }
-
+    
     @Override
     public Player getOwner()
     {
