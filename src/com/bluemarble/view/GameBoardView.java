@@ -31,6 +31,7 @@ public class GameBoardView extends JPanel
     private Bank bank;
     private Player[] players;
     private int turn;
+    private ArrayList<Integer> bankruptPlayer;
 
     public GameBoardView(JFrame frame, Dice dice, Bank bank)
     {
@@ -44,6 +45,7 @@ public class GameBoardView extends JPanel
         loadImage();
         initializePosArray();
         initializePanel(bank.playerCount);
+        bankruptPlayer = new ArrayList<>();
 
         diceButton = new JButton("주사위 굴리기");
         diceButton.setBounds(720, 820, 130, 40);
@@ -160,7 +162,18 @@ public class GameBoardView extends JPanel
     {
         for(int i = 0; i < playerCount; i++)
         {
-            g.drawImage(smallAirPlaneImage[i], playersPosition.get(i)[0], playersPosition.get(i)[1], this);
+            if(!(bankruptPlayer.contains(i)))
+            {
+                g.drawImage(smallAirPlaneImage[i], playersPosition.get(i)[0], playersPosition.get(i)[1], this);
+            }
+        }
+    }
+
+    public void setBankruptPlayer(int turn)
+    {
+        if(!(bankruptPlayer.contains(turn)))
+        {
+            bankruptPlayer.add(turn);
         }
     }
 

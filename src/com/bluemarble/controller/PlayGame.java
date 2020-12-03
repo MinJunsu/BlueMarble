@@ -49,7 +49,7 @@ public class PlayGame
     {
         if(players[turn].getIsIsolated())
         {
-            if((firstNumber == secondNumber) || (players[turn].getIsolateCount() > 3))
+            if((firstNumber == secondNumber) || (players[turn].getIsolateCount() > 2))
             {
                 players[turn].escapeIsolate();
                 JOptionPane.showMessageDialog(null, "무인도 탈출 성공!! 다음턴 부터 정상적으로 움직일 수 있습니다.");
@@ -57,7 +57,7 @@ public class PlayGame
             else
             {
                 players[turn].increaseIsolateCount();
-                JOptionPane.showMessageDialog(null, "현재 " + players[turn].getIsolateCount() + " 번째 탈출 시도"
+                JOptionPane.showMessageDialog(null, "현재 " + (players[turn].getIsolateCount() - 1) + " 번째 탈출 시도"
                         + "\n첫번째 주사위 : " + firstNumber + ", 두번째 주사위 : " + secondNumber + "로 탈출 불가합니다.");
             }
             doTurnOver();
@@ -193,7 +193,19 @@ public class PlayGame
 
     public void doTurnOver()
     {
-        turn++;
+        boolean flag = false;
+        while(players[(turn + 1) > 3 ? 0 : turn + 1].getBankrupt())
+        {
+            gameBoardView.setBankruptPlayer(turn);
+            turn = turn + 1;
+            flag = true;
+        }
+
+        if(!flag)
+        {
+            turn++;
+        }
+
         if(turn >= bank.playerCount)
         {
             turn = 0;

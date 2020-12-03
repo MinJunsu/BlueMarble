@@ -132,9 +132,9 @@ public class GoldenKey
         }
         else
         {
-        	p.withdraw(50000);
+            p.withdraw(50000);
         }
-            
+
     }
 
     private void lottery(Player p)
@@ -171,23 +171,30 @@ public class GoldenKey
         message = "   • 관광여행(제주도)  • \n" +
                 "제주도로 가시오.(제주도에 통행료 지불, 출발지 거쳐갈경우 월급 받으시오.)";
         showMessage(message);
-        
+
         gameBoardView.moveAirPlane(1, p.getPosition(), turn);
         playGame.goldenKeyPlay(5);
     }
 
-    private void finesSpeeding(Player p) 
+    private void finesSpeeding(Player p)
     {
         message = "   • 과속운전벌금  • \n" +
                 "과속운전을 했으므로 벌금 5만원을 내시오.\n";
         showMessage(message);
-        if (bank.isBankrupt(p, 50000))
+        if(p.withdraw(50000))
         {
-            showMessage(p.getName() + "님이 파산하셨습니다.");
+            showMessage("50000원 출금 완료");
         }
         else
         {
-        	p.withdraw(50000);
+            if (bank.isBankrupt(p, 50000))
+            {
+                showMessage(p.getName() + "님이 파산하셨습니다.");
+            }
+            else
+            {
+                p.withdraw(50000);
+            }   
         }
     }
 
@@ -196,13 +203,20 @@ public class GoldenKey
         message = "   • 해외유학  • \n" +
                 "학교 등록금 10만원을 내시오";
         showMessage(message);
-        if (bank.isBankrupt(p, 100000))
+        if(p.withdraw(100000))
         {
-            showMessage(p.getName() + "님이 파산하셨습니다.");
+            showMessage("100000원 출금 완료");
         }
         else
         {
-        	p.withdraw(100000);
+            if (bank.isBankrupt(p, 100000))
+            {
+                showMessage(p.getName() + "님이 파산하셨습니다.");
+            }
+            else
+            {
+                p.withdraw(100000);
+            }
         }
     }
 
@@ -293,18 +307,26 @@ public class GoldenKey
         int[] constructCount = p.getConstructCount();
 
         int pay = constructCount[2] * 50000 + constructCount[1] * 30000 + constructCount[0] * 10000;
-        if (bank.isBankrupt(p, pay))
+
+        if(p.withdraw(pay))
         {
-            showMessage(p.getName() + "님이 파산하셨습니다.");
+            showMessage(pay + "원 출금 완료");
         }
         else
         {
-        	if (p.withdraw(pay))
-        		showMessage("납부 성공");
+            if (bank.isBankrupt(p, pay))
+            {
+                showMessage(p.getName() + "님이 파산하셨습니다.");
+            }
+            else
+            {
+                if (p.withdraw(pay))
+                    showMessage("납부 성공");
+            }
         }
     }
 
-    private void scholarship(Player p) 
+    private void scholarship(Player p)
     {
         message = "   • 장학금혜택  • \n" +
                 "은행에서 장학금 10만원을 받으시오";
@@ -312,7 +334,7 @@ public class GoldenKey
         p.deposit(100000);
     }
 
-    private void worldTrip(Player p) 
+    private void worldTrip(Player p)
     {
         message = "   • 세계일주초대권  • \n" +
                 "축하하오. 현재 위치에서부터 한바퀴 돌아오시오.\n" +
@@ -330,13 +352,22 @@ public class GoldenKey
         int[] constructCount = p.getConstructCount();
 
         int pay = constructCount[2] * 100000 + constructCount[1] * 60000 + constructCount[0] * 30000;
-        if (bank.isBankrupt(p, pay))
+
+        if(p.withdraw(pay))
         {
-            showMessage(p.getName() + "님이 파산하셨습니다.");
+            showMessage(pay + "원 출금 완료");
         }
         else
         {
-        	p.withdraw(pay);
+            if (bank.isBankrupt(p, pay))
+            {
+                showMessage(p.getName() + "님이 파산하셨습니다.");
+            }
+            else
+            {
+                if (p.withdraw(pay))
+                    showMessage("납부 성공");
+            }
         }
     }
 
@@ -374,13 +405,21 @@ public class GoldenKey
         showMessage(message);
         int[] constructCount = p.getConstructCount();
         int pay = constructCount[2] * 150000 + constructCount[1] * 100000 + constructCount[0] * 30000;
-        if (bank.isBankrupt(p, pay))
+        if(p.withdraw(pay))
         {
-            showMessage(p.getName() + "님이 파산하셨습니다.");
+            showMessage(pay + "원 출금 완료");
         }
         else
         {
-        	p.withdraw(pay);
+            if (bank.isBankrupt(p, pay))
+            {
+                showMessage(p.getName() + "님이 파산하셨습니다.");
+            }
+            else
+            {
+                if (p.withdraw(pay))
+                    showMessage("납부 성공");
+            }
         }
     }
 

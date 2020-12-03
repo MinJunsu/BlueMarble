@@ -118,8 +118,6 @@ public class Bank
     
     public boolean isBankrupt(Player p, int pay)
     {
-    	boolean flag = false;
-    	
     	while(p.getBalance() > pay)
         {
             if(p.getHighPrice() != null)
@@ -128,11 +126,11 @@ public class Bank
             }
             else
             {
-                p = null;
-                flag = true;
+                p.setBankrupt();
+                return true;
             }
         }
-    	return flag;
+    	return false;
     }
 
     public void getPaid(Player player)

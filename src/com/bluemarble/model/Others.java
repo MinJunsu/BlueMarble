@@ -1,5 +1,6 @@
 package com.bluemarble.model;
 
+import com.bluemarble.controller.PlayGame;
 import com.bluemarble.view.GameBoardView;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ public class Others extends Board
 {
     private String name;
     private int otherType;
+    private PlayGame playGame;
 
     public Others(String name, int otherType)
     {
