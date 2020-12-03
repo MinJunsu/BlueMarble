@@ -11,15 +11,32 @@ public class Player
     private int position;
     private ArrayList<Country> countries;
     private int ticketCount;
+    private String topCountry;
 
     public Player(String name, int balance)
     {
         this.position = 0;
         this.name = name;
         this.balance = balance;
+        this.topCountry = "";
         countries = new ArrayList<Country>();
     }
 
+    public Country getHighPrice()
+    {
+        int tmp = 0;
+        Country country = null;
+        for(Country c : countries)
+        {
+            if(c.getTotalPrice() > tmp)
+            {
+                tmp = c.getTotalPrice();
+                country = c;
+            }
+        }
+        return country;
+    }
+    
     public void setIsolated()
     {
         this.isIsolated = true;
@@ -71,6 +88,13 @@ public class Player
         return false;
     }
 
+    public void saleCountry(Country country, int per)
+    {
+    	int sale_price = (int) (country.getTotalPrice() * (per / 100));
+    	this.deposit(sale_price);
+    	countries.remove(country);
+    }
+    
     public boolean withdraw(int price)
     {
         if(price < balance)
@@ -101,20 +125,6 @@ public class Player
     public ArrayList<Country> getCountries()
     {
         return countries;
-    }
-
-    public void sellCountry(String countryName)
-    {
-        for(int i = 0; i < countries.size(); i++)
-        {
-            if(countries.get(i).getName().equals(countryName))
-            {
-                countries.get(i).sellCountry();
-                countries.remove(i);
-                // 우선 20만원 입금
-                this.deposit(200000);
-            }
-        }
     }
 
     public void deposit(int price)
