@@ -238,6 +238,21 @@ public class GameBoardView extends JPanel
 
     public void setDice(int first, int second)
     {
+        // 주사위 변경이 되지 않음.
+        /*
+        for(int i = 0; i < 10; i++)
+        {
+            firstDice = diceImage[(int) (Math.random() * 6)];
+            secondDice = diceImage[(int) (Math.random() * 6)];
+            repaint();
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (Exception e) { }
+        }
+        */
+
         firstDice = diceImage[first - 1];
         secondDice = diceImage[second - 1];
         if(firstDice == secondDice)
@@ -297,6 +312,7 @@ public class GameBoardView extends JPanel
         for(int i = 0; i < 36; i++)
         {
             JButton button = new JButton();
+            button.setBackground(new Color(146, 209, 79));
             int tmp = i / 9;
             switch (tmp)
             {
@@ -345,4 +361,19 @@ public class GameBoardView extends JPanel
             statusView.setVisible(true);
         }
     }
+
+    public void setColorDefault(Country c)
+    {
+        int i = 0;
+        for(Board board : boards)
+        {
+            if(c.getName() == board.getName())
+            {
+                System.out.println(i);
+                buttons[i - (1 + (i / 10))].setBackground(new Color(146, 209, 79));
+            }
+            i++;
+        }
+    }
+
 }

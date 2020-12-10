@@ -1,5 +1,7 @@
 package com.bluemarble.model;
 
+import com.bluemarble.view.GameBoardView;
+
 import java.util.ArrayList;
 
 public class Player
@@ -12,6 +14,7 @@ public class Player
     private ArrayList<Country> countries;
     private int ticketCount;
     private boolean isBankrupt;
+    private GameBoardView gameBoardView;
 
     public Player(String name, int balance)
     {
@@ -42,6 +45,11 @@ public class Player
         isolateCount++;
     }
 
+    public void setGameBoardView(GameBoardView gameBoardView)
+    {
+        this.gameBoardView = gameBoardView;
+    }
+
     public Country getHighPrice()
     {
         int tmp = 0;
@@ -61,6 +69,8 @@ public class Player
     {
         int sale_price = (int) (country.getTotalPrice() * (per / 100));
         this.deposit(sale_price);
+        country.saleCountry();
+        gameBoardView.setColorDefault(country);
         countries.remove(country);
     }
 

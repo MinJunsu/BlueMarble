@@ -24,7 +24,7 @@ public class PlayGame
     private Bank bank;
     private int doubleCount, turn;
     private int firstNumber, secondNumber;
-    private Color[] colors = {Color.RED, Color.BLUE, Color.BLACK, Color.YELLOW};
+    private Color[] colors = {Color.RED, Color.BLUE, Color.WHITE, Color.YELLOW};
     private PlayerPanelView[] playerPanelViews;
 
     public PlayGame(int playerCount, Dice dice, MainView view, Bank bank)
@@ -39,6 +39,10 @@ public class PlayGame
         this.diceButton = gameBoardView.getDiceButton();
         this.turnOverButton = gameBoardView.getTurnOverButton();
         players = bank.getPlayers();
+        for(Player p : players)
+        {
+            p.setGameBoardView(gameBoardView);
+        }
         gameBoardView.setBoards(boards);
         gameBoardView.setPlayerCount(bank.playerCount);
         goldenKey = new GoldenKey(bank, gameBoardView, this);
@@ -129,82 +133,13 @@ public class PlayGame
     public void goldenKeyPlay(int arrival_index)
     {
     	int move = arrival_index > players[turn].getPosition() ? players[turn].getPosition() - arrival_index : 40 - (arrival_index - players[turn].getPosition());
-        gameBoardView.moveAirPlane(move, players[turn].getPosition(), turn);
-        if((players[turn].getPosition() + move) / 40 == 1)
-        {
-            bank.getPaid(players[turn]);
-        }
-        players[turn].move(move);
-
-        if (boards[players[turn].getPosition()].getType())
-        {
-            if (boards[players[turn].getPosition()].getOwner() == null)
-            {
-                if(bank.buyCountry(players[turn], (Country) boards[players[turn].getPosition()]))
-                {
-                    gameBoardView.setButtonColor(colors[turn], players[turn].getPosition());
-                }
-            }
-            else if(boards[players[turn].getPosition()].getOwner() != players[turn])
-            {
-                if(boards[players[turn].getPosition()].getName() == "제주도" || boards[players[turn].getPosition()].getName() == "콩코드 여객기" || boards[players[turn].getPosition()].getName() == "부산"
-                        || boards[players[turn].getPosition()].getName() == "타이타닉호" || boards[players[turn].getPosition()].getName() == "콜롬비아호" || boards[players[turn].getPosition()].getName() == "서울" ) {
-                    return;
-                }
-                bank.payTollFee(boards[players[turn].getPosition()].getOwner(), players[turn], boards[players[turn].getPosition()].getTollFee());
-            }
-            else
-            {
-                bank.buyConstructor((Country) boards[players[turn].getPosition()], players[turn]);
-            }
-        }
-        else
-        {
-            int value = boards[players[turn].getPosition()].getOtherType();
-            switch (value)
-            {
-                case 1:
-                    JOptionPane.showMessageDialog(null, "무인도에 들어오셨습니다. 더블이 나오시거나, 3턴이 지나면 탈출할 수 있습니다.");
-                    boards[players[turn].getPosition()].isolated(players[turn]);
-                    doTurnOver();
-                    break;
-
-                case 2:
-                    boards[players[turn].getPosition()].donation(players[turn]);
-                    break;
-
-                case 3:
-                    boards[players[turn].getPosition()].travel(players[turn]);
-                    break;
-
-                case 4:
-                    // 사회 복지기금 받기
-                    break;
-
-                case 5:
-                    goldenKey.makeRandomNumber();
-                    goldenKey.setPlayer(turn);
-                    goldenKey.pickGoldenKey(players[turn]);
-                    break;
-            }
-        }
-        playerPanelViews[turn].updatePlayer();
+        play(move, 0);
     }
 
     public void doTurnOver()
     {
-        boolean flag = false;
-        while(players[(turn + 1) > 3 ? 0 : turn + 1].getBankrupt())
-        {
-            gameBoardView.setBankruptPlayer(turn);
-            turn = turn + 1;
-            flag = true;
-        }
 
-        if(!flag)
-        {
-            turn++;
-        }
+        turn++;
 
         if(turn >= bank.playerCount)
         {

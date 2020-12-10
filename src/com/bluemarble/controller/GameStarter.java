@@ -30,14 +30,14 @@ public class GameStarter
         switch (playerCount)
         {
             case 4:
-                forthPlayer = new Player(playerNames[3], 1000000);
+                forthPlayer = new Player(playerNames[3], 3000000);
 
             case 3:
-                thirdPlayer = new Player(playerNames[2], 1000000);
+                thirdPlayer = new Player(playerNames[2], 3000000);
 
             case 2:
-                secondPlayer = new Player(playerNames[1], 1000000);
-                firstPlayer = new Player(playerNames[0], 1000000);
+                secondPlayer = new Player(playerNames[1], 3000000);
+                firstPlayer = new Player(playerNames[0], 3000000);
                 break;
         }
     }
